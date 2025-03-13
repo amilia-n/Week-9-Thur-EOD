@@ -4,34 +4,62 @@ import { render, fireEvent, cleanup } from '@testing-library/react';
 
 afterEach(cleanup);
 
-// 1️⃣ Count starts with 0 and button is disabled
-// - Render the Counter component
-// - Find the count and button elements
-// - Assert that the count starts at 0
-// - Assert that the button is disabled initially
+// Step 1: Count starts with 0 and button is disabled
+test('count starts with 0 and button is disabled', () => {
+  const { getByTestId } = render(<Counter />);
+  const countElement = getByTestId('count');
+  const buttonElement = getByTestId('button');
 
-// 2️⃣ Checking the checkbox enables the button
-// - Render the Counter component
-// - Find the button and checkbox elements
-// - Verify the button is initially disabled
-// - Click the checkbox to check it
-// - Verify the button is now enabled
+  expect(countElement.textContent).toBe('Clicked 0 times');
+  expect(buttonElement).toBeDisabled();
+});
 
-// 3️⃣ Clicking enabled button increments counter
-// - Render the Counter component
-// - Find all necessary elements
-// - Enable the button by checking the checkbox
-// - Click the button once
-// - Verify the count is now 1 (singular form)
-// - Click the button again
-// - Verify the count is now 2 (plural form)
+// Step 2: Checking the checkbox enables the button
+test('checking the checkbox enables the button', () => {
+  const { getByTestId } = render(<Counter />);
+  const buttonElement = getByTestId('button');
+  const checkboxElement = getByTestId('checkbox');
 
-// 4️⃣ Document title updates when checkbox is checked
-// - Set up initial document title
-// - Render the Counter component
-// - Find the button and checkbox elements
-// - Check the checkbox
-// - Verify title shows initial count of 0
-// - Click the button to increment counter
-// - Verify title updates to show count of 1
-// - Uncheck the checkbox
+  expect(buttonElement).toBeDisabled();
+  fireEvent.click(checkboxElement);
+  expect(buttonElement).toBeEnabled();
+});
+
+// Step 3: Clicking enabled button increments counter
+test('clicking enabled button increments counter', () => {
+  const { getByTestId } = render(<Counter />);
+  const buttonElement = getByTestId('button');
+  const checkboxElement = getByTestId('checkbox');
+  const countElement = getByTestId('count');
+
+  // Enable button
+  fireEvent.click(checkboxElement);
+
+  // First click
+  fireEvent.click(buttonElement);
+  expect(countElement.textContent).toBe('Clicked 1 time');
+
+  // Second click
+  fireEvent.click(buttonElement);
+  expect(countElement.textContent).toBe('Clicked 2 times');
+});
+
+// Step 4 Document title updates when checkbox is checked
+test('document title updates when checkbox is checked', () => {
+  const originalTitle = document.title;
+  const { getByTestId } = render(<Counter />);
+  const buttonElement = getByTestId('button');
+  const checkboxElement = getByTestId('checkbox');
+
+  // Check the checkbox
+  fireEvent.click(checkboxElement);
+  expect(document.title).toBe('Total number of clicks: 0');
+
+  // Click button to increment
+  fireEvent.click(buttonElement);
+  expect(document.title).toBe('Total number of clicks: 1');
+
+  // Uncheck checkbox
+  fireEvent.click(checkboxElement);
+  expect(document.title).toBe(originalTitle);
+});
